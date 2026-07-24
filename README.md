@@ -8,6 +8,10 @@ NXP Semiconductors（旧Philips）製のFMラジオ受信DSPモジュールで�
 詳細は、以下のディレクトリをご覧ください。  
 [./tea5767/README.md](./TEA5767/README.md)
 
+![./tea5767/images/DSCN0954_800x600.jpg](./tea5767/images/DSCN0949_trim_540x540.jpg)
+
+![./tea5767/images/DSCN0952_800x600.jpg](./tea5767/images/DSCN0952_800x600.jpg)
+
 ----
 
 ## RDA5807 用パッケージ

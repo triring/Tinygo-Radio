@@ -30,3 +30,10 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+*.bak
+*.ps1
+*.zip
+backup/
+ForgeRoom/
+photo/
+workmemo.txt

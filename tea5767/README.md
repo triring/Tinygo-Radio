@@ -2,6 +2,8 @@
 
 FMラジオ受信DSPモジュールTEA5767をTinygoでコントロールするためのパッケージです。
 
+![./images/DSCN0954_800x600.jpg](./images/DSCN0954_800x600.jpg)
+
 ## TEA5767の特徴
 
 TEA5767は、NXP Semiconductors（旧Philips）製のFMラジオ受信DSPモジュールで、低消費電力・小型設計、I²C制御、自動同調(AFC)、ステレオ復調を備えている。  
