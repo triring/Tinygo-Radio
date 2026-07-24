@@ -73,7 +73,7 @@ func inRange(min, value, max int) bool {
 }
 
 // Initialize the TEA5767.
-// 
+//
 // TEA5767を初期化する。起動後に
 func (d *Device) InitTEA5767() {
 	// 起動時はスタンバイ状態(STBY=1) ＆ ミュート(MUTE=1)で安全に初期化
@@ -81,7 +81,6 @@ func (d *Device) InitTEA5767() {
 	machine.I2C0.Tx(DefaultAddress, initData, nil)
 	time.Sleep(100 * time.Millisecond)
 }
-
 
 // SetFrequency は MHz を指定して周波数を設定する
 func (d *Device) GetFrequency() int {
@@ -121,16 +120,15 @@ func tuneRaw(freqHz float64, hlsi int, bl byte, mute bool) {
 	time.Sleep(100 * time.Millisecond) // チューニングと内部安定化のための待機
 }
 
-//GetRSSI は現在の信号強度(0-15)を読み出します
+// GetRSSI は現在の信号強度(0-15)を読み出します
 func GetRSSI() uint8 {
 	var readBuf [5]byte
 	machine.I2C0.Tx(DefaultAddress, nil, readBuf[:])
 	return readBuf[3] >> 4
 }
 
-
 // TuneFrequency は指定した周波数にチューニングする。
-// 
+//
 // High/Low Sideの最適化をしてからチューニングを行う。
 func (d *Device) TuneFrequency(freqKHz int) (uint8, string) {
 	if false == inRange(76000, freqKHz, 99000) {
@@ -141,7 +139,7 @@ func (d *Device) TuneFrequency(freqKHz int) (uint8, string) {
 	freqHz := float64(freqKHz * 1000)
 	// 1. 周波数に応じたバンド(BL)の設定
 	var bl byte
- 	if freqHz < 87500000.0 {
+	if freqHz < 87500000.0 {
 		bl = 0b00110000 // JPモード (BL=1, XTAL=1)
 	} else {
 		bl = 0b00010000 // US/EUモード (BL=0, XTAL=1)
@@ -155,7 +153,6 @@ func (d *Device) TuneFrequency(freqKHz int) (uint8, string) {
 	tuneRaw(freqHz-450000.0, 0, bl, true)
 	signalLow := d.GetRSSI()
 
-
 	// 4. ノイズが少ない(電波が弱い)方を採用する
 	hlsi := 1
 	injectionMode := "High Side"
@@ -167,13 +164,13 @@ func (d *Device) TuneFrequency(freqKHz int) (uint8, string) {
 	}
 
 	// 5. 決定した最適な設定で本命の周波数にチューニング (ミュート解除)
-//	tuneRaw(freqHz, hlsi, bl, d.cfg.Mute)
-//	tuneRaw(freqHz, hlsi, bl, true)
+	//	tuneRaw(freqHz, hlsi, bl, d.cfg.Mute)
+	//	tuneRaw(freqHz, hlsi, bl, true)
 	tuneRaw(freqHz, hlsi, bl, d.cfg.Mute)
 
-	rssi := d.GetRSSI()	// 現在の信号強度(0-15)を取得する。
-//	for debug
-//	fmt.Printf(" -> Optimized with %s (High: %d, Low: %d, Current rssi: %d)\n", injectionMode, signalHigh, signalLow, rssi)
+	rssi := d.GetRSSI() // 現在の信号強度(0-15)を取得する。
+	//	for debug
+	//	fmt.Printf(" -> Optimized with %s (High: %d, Low: %d, Current rssi: %d)\n", injectionMode, signalHigh, signalLow, rssi)
 	return rssi, injectionMode
 }
 
@@ -206,7 +203,7 @@ func (d *Device) GetStatus() (rssi uint8, ifCounter uint8, stereo bool) {
 }
 
 // RSSI の取得
-// 
+//
 // 現在の信号強度(0-15)を読み出す
 func (d *Device) GetRSSI() (rssi uint8) {
 	buf := make([]byte, 5)
