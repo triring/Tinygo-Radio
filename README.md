@@ -6,7 +6,7 @@ NXP Semiconductors（旧Philips）製のFMラジオ受信DSPモジュールで�
 外付け部品が少なく、組み込み機器や携帯端末への実装が容易で、安定した受信性能を手軽に利用できる。  
 
 詳細は、以下のディレクトリをご覧ください。  
-[./tea5767/README.md](./TEA5767/README.md)
+[./tea5767/README.md](./tea5767/README.md)
 
 ![./tea5767/images/DSCN0954_800x600.jpg](./tea5767/images/DSCN0949_trim_540x540.jpg)
 
