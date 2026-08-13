@@ -14,11 +14,16 @@ NXP Semiconductors（旧Philips）製のFMラジオ受信DSPモジュールで�
 
 ----
 
-## RDA5807 用パッケージ
+## [RDA5807](./rda5807/README.md) 用パッケージ
 RDA Microelectronics製のFMラジオ受信DSPモジュールで、低消費電力、I²C制御、自動同調(AFC)、ステレオ復調を備えている。  
 外付け部品が少なく、組み込み機器への搭載が容易である。さらに内蔵アンテナ入力の柔軟性や高感度受信が評価され、携帯端末やDIYラジオで広く利用されている。  
 
-調査/研究中
+詳細は、以下のディレクトリをご覧ください。  
+[./rda5807/README.md](./rda5807/README.md)
+
+![./rda5807/images/DSCN0954_800x600.jpg](./rda5807/images/DSCN0949_trim_540x540.jpg)
+
+![./rda5807/images/DSCN0952_800x600.jpg](./rda5807/images/DSCN0952_800x600.jpg)
 
 ----
 
