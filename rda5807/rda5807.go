@@ -259,7 +259,7 @@ func (d *Device) GetLowerFrequencyLimit() int {
 
 // RSSI の取得 (受信信号強度)
 //
-// 現在の信号強度(0-15)を読み出す
+// 現在の信号強度(0-63)を読み出す
 // REG 0x0B:
 //
 //	15:10 RSSI[5:0] : 受信信号強度
