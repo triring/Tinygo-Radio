@@ -127,10 +127,10 @@ func GetRSSI() uint8 {
 	return readBuf[3] >> 4
 }
 
-// TuneFrequency は指定した周波数にチューニングする。
+// SetFrequency は指定した周波数にチューニングする。
 //
 // High/Low Sideの最適化をしてからチューニングを行う。
-func (d *Device) TuneFrequency(freqKHz int) (uint8, string) {
+func (d *Device) SetFrequency(freqKHz int) (uint8, string) {
 	if false == inRange(76000, freqKHz, 99000) {
 		// 周波数範囲外であれば、エラーとして、falseを返す。
 		return 0, "Outside frequency range."
@@ -177,7 +177,7 @@ func (d *Device) TuneFrequency(freqKHz int) (uint8, string) {
 // SetMute はミュート ON/OFF
 func (d *Device) SetMute(state bool) {
 	d.cfg.Mute = state
-	d.TuneFrequency(d.frequency) // PLL 0 で制御バイトだけ送る
+	d.SetFrequency(d.frequency) // PLL 0 で制御バイトだけ送る
 }
 
 // GetMute はミュートの状態を返す。

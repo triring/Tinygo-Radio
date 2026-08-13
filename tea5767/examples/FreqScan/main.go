@@ -39,11 +39,11 @@ func main() {
 		// フリーズ（I2C通信が設定できなくなる）してしまうバグがあるので、
 		// 受信帯域をJPモードに制限する。
 	)
-	radio.TuneFrequency(FREQ_MIN)
+	radio.SetFrequency(FREQ_MIN)
 	radio.SetMute(true)
 	// WideFMの周波数範囲は、76.0MHzから99.0MHzまで
 	for freq = FREQ_MIN; freq <= FREQ_MAX; freq += 100 {
-		radio.TuneFrequency(freq)
+		radio.SetFrequency(freq)
 		rssi = radio.GetRSSI()
 		fmt.Printf("%3.1f,%2d :", float32(freq)/1000.0, rssi)
 		for i = 0; i < (rssi*rssi)/4; i++ {

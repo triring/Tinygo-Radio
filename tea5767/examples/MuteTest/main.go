@@ -37,7 +37,7 @@ func main() {
 	})
 	radio.InitTEA5767() // TEA5767の初期化を行う。
 	time.Sleep(time.Second * 1)
-	radio.TuneFrequency(freq)
+	radio.SetFrequency(freq)
 	time.Sleep(time.Second * 3)
 
 	// プログラムが終了しないように無限ループで待機（ラジオは鳴り続けます）

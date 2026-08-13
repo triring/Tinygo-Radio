@@ -146,7 +146,7 @@ func main() {
 		Mute:      false,
 	})
 
-	radio.TuneFrequency(76000) // KHzで設定すること
+	radio.SetFrequency(76000) // KHzで設定すること
 	radio.SetMute(false)       // 最初は出力を切っておく。
 	execStatus := true
 	for execStatus {
@@ -180,7 +180,7 @@ func main() {
 					freq, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
 					if err == nil {
 						fmt.Printf("freq   : %d\n", int(freq))
-						radio.TuneFrequency(int(freq))
+						radio.SetFrequency(int(freq))
 						radio.SetMute(false)
 					}
 				}

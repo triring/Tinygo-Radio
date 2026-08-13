@@ -32,7 +32,7 @@ func main() {
 		Mute:      false,
 	})
 
-	radio.TuneFrequency(freq)
+	radio.SetFrequency(freq)
 
 	for {
 		rssi := radio.GetRSSI()
