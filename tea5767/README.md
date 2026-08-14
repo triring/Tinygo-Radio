@@ -25,6 +25,9 @@ git clone https://github.com/triring/Tinygo-Radio.git
 |   tea5767.go
 |
 \---examples
+    +---FMstation   配列に登録されている周波数を順番に受信していく。
+    |       main.go
+    |
     +---FreqScan    全周波数帯の信号強度を取得
     |       main.go
     |
