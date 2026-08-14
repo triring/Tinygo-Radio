@@ -31,17 +31,14 @@ func main() {
 		SCL:       machine.GPIO13, // for zero-kb02(raspi pico)
 		Frequency: 400 * machine.KHz,
 	})
-	time.Sleep(500 * time.Millisecond)
 	// rda5807のオブジェクト生成
 	// 第1引数: 使用するI2Cチャンネル
 	radio := rda5807.New(i2c)
-	time.Sleep(500 * time.Millisecond)
 	// rda5807を初期化
 	radio.InitRDA5807(rda5807.Band_World_Wide)
-	time.Sleep(500 * time.Millisecond)
 	// 周波数を設定
 	radio.SetFrequency(freq)
-	time.Sleep(500 * time.Millisecond)
+	time.Sleep(200 * time.Millisecond)
 
 	for {
 		rssi, err := radio.GetRSSI()

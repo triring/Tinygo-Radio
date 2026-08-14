@@ -38,7 +38,6 @@ func main() {
 	radio.InitRDA5807(rda5807.Band_World_Wide)
 	// 周波数を設定
 	radio.SetFrequency(freq)
-	time.Sleep(time.Millisecond * 800)
 	id, err := radio.GetChipID()
 	if err != nil {
 		fmt.Printf("GetChipID() error %s\n", err)
@@ -72,7 +71,6 @@ func main() {
 		fmt.Printf("FM %5.1fMHz 受信中,Vol : %2d, RSSI : %2d\n", (float64(f) / 1000.0), v, r)
 		time.Sleep(time.Second * 5)
 	}
-
 }
 
 /*

@@ -1,5 +1,5 @@
 // TinyGo コード（TEA5767 初期化 → 76.8MHz 受信）
-// tinygo build -target=m5stack -size=short -o fm_radio.uf2 .
+// tinygo build -target=m5stack -size=short -o MuteTest.uf2 .
 // tinygo flash -target=m5stack -size=short -monitor .
 // tinygo flash -target=pico -size=short -monitor .
 
@@ -40,31 +40,33 @@ func main() {
 	radio.SetFrequency(freq)
 	time.Sleep(time.Second * 3)
 
-	// プログラムが終了しないように無限ループで待機（ラジオは鳴り続けます）
 	for {
 		f := radio.GetFrequency() // 現在、受信中の周波数を取得
-		m := radio.GetMute()
-		fmt.Printf("FM %3.1fMHz 受信中, Mute=%5t ", (float64(f) / 1000.0), m)
+		radio.SetMute(false)
+		fmt.Printf("FM %5.1fMHz 受信中 : Unmute |", (float64(f) / 1000.0))
 		for i := 1; i <= 10; i++ {
-			fmt.Printf(" %2d", i)
+			fmt.Printf("%3d", i)
 			time.Sleep(time.Second * 1)
 		}
 		fmt.Printf("\n")
-		radio.SetMute(!m)
+		radio.SetMute(true)
+		fmt.Printf("FM %5.1fMHz 受信中 :   Mute |", (float64(f) / 1000.0))
+		for i := 1; i <= 10; i++ {
+			fmt.Printf("%3d", i)
+			time.Sleep(time.Second * 1)
+		}
+		fmt.Printf("\n")
 	}
-
 }
 
 /*
-
-  65416    1556    5576 |   66972    7132
+> tinygo flash -target=pico -size=short -monitor .
+   code    data     bss |   flash     ram
+  65456    1556    5576 |   67012    7132
 Connected to COM4. Press Ctrl-C to exit.
-FM 76.8MHz 受信中, Mute=false   1  2  3  4  5  6  7  8  9 10
-FM 76.8MHz 受信中, Mute= true   1  2  3  4  5  6  7  8  9 10
-FM 76.8MHz 受信中, Mute=false   1  2  3  4  5  6  7  8  9 10
-FM 76.8MHz 受信中, Mute= true   1  2  3  4  5  6  7  8  9 10
-FM 76.8MHz 受信中, Mute=false   1  2  3  4  5  6  7  8  9 10
-FM 76.8MHz 受信中, Mute= true   1  2  3  4  5  6  7  8  9 10
-FM 76.8MHz 受信中, Mute=false   1  2  3  4  5  6  7  8  9 10
-FM 76.8MHz 受信中, Mute= true   1  2  3  4  5  6
+FM  76.8MHz 受信中 : Unmute |  1  2  3  4  5  6  7  8  9 10
+FM  76.8MHz 受信中 :   Mute |  1  2  3  4  5  6  7  8  9 10
+FM  76.8MHz 受信中 : Unmute |  1  2  3  4  5  6  7  8  9 10
+FM  76.8MHz 受信中 :   Mute |  1  2  3  4  5  6  7  8  9 10
+FM  76.8MHz 受信中 : Unmute |  1  2  3  4  5  6  7  8
 */

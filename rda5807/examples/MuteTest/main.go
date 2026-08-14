@@ -39,17 +39,23 @@ func main() {
 	radio.InitRDA5807(rda5807.Band_World_Wide)
 	// 周波数を設定
 	radio.SetFrequency(freq)
-	time.Sleep(800 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 
 	// 無限ループでmute とUnmuteを5秒毎に繰り返す。
 	for {
 		f, _ := radio.GetFrequency() // 現在、受信中の周波数を取得
 		fmt.Printf("FM %5.1fMHz 受信中 : Unmute\n", (float64(f) / 1000.0))
 		radio.SetMute(1)
-		time.Sleep(time.Second * 5)
+		for i := 1; i <= 10; i++ {
+			fmt.Printf(" %2d", i)
+			time.Sleep(time.Second * 1)
+		}
 		fmt.Printf("FM %5.1fMHz 受信中 :   Mute\n", (float64(f) / 1000.0))
 		radio.SetMute(0)
-		time.Sleep(time.Second * 5)
+		for i := 1; i <= 10; i++ {
+			fmt.Printf(" %2d", i)
+			time.Sleep(time.Second * 1)
+		}
 	}
 }
 

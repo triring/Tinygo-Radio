@@ -31,27 +31,23 @@ func main() {
 		SCL:       machine.GPIO13, // for zero-kb02(raspi pico)
 		Frequency: 400 * machine.KHz,
 	})
-	time.Sleep(500 * time.Millisecond)
 	// rda5807のオブジェクト生成
 	// 第1引数: 使用するI2Cチャンネル
 	radio := rda5807.New(i2c)
-	time.Sleep(500 * time.Millisecond)
-	// rda5807を初期化
-	// 受信帯域を設定する。
+	// rda5807を初期化し、受信帯域を設定する。
 	radio.InitRDA5807(rda5807.Band_World_Wide)
 	time.Sleep(500 * time.Millisecond)
-	// 周波数を設定
-	time.Sleep(500 * time.Millisecond)
+	// 音量の設定
 	radio.SetVolume(12)
 	v, _ := radio.GetVolume()
 	fmt.Printf("Volume %d\n", v)
-
 	for {
+		// 配列に登録されている放送局の周波数を順次、チューニングして5秒づつ受信を繰り返す。
 		for i, f := range station {
 			radio.SetFrequency(f)
 			freq, _ = radio.GetFrequency() //	受信中の周波数を取得
 			rssi, _ = radio.GetRSSI()      //	電波強度を取得
-			fmt.Printf("%d. FM %3.1fMHz 受信中, RSSI : %2d\n", i, (float64(freq) / 1000.0), rssi)
+			fmt.Printf("%d. FM %5.1fMHz 受信中, RSSI : %2d\n", i, (float64(freq) / 1000.0), rssi)
 			time.Sleep(time.Second * 5)
 		}
 	}
