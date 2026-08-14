@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"machine"
 	// "rda5807" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
-	"time"
 	"github.com/triring/Tinygo-Radio/rda5807" // githubで公開しているパッケージをインポートする場合
+	"time"
 )
 
 func main() {
@@ -49,11 +49,11 @@ func main() {
 	for {
 		for i, f := range station {
 			radio.SetFrequency(f)
-			freq, _ = radio.GetFrequency()	//	受信中の周波数を取得
-			rssi, _ = radio.GetRSSI()		//	電波強度を取得
+			freq, _ = radio.GetFrequency() //	受信中の周波数を取得
+			rssi, _ = radio.GetRSSI()      //	電波強度を取得
 			fmt.Printf("%d. FM %3.1fMHz 受信中, RSSI : %2d\n", i, (float64(freq) / 1000.0), rssi)
 			time.Sleep(time.Second * 5)
-		} 
+		}
 	}
 }
 

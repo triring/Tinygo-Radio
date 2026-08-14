@@ -21,9 +21,8 @@ RDA Microelectronics製のFMラジオ受信DSPモジュールで、低消費電�
 詳細は、以下のディレクトリをご覧ください。  
 [./rda5807/README.md](./rda5807/README.md)
 
-![./rda5807/images/DSCN0954_800x600.jpg](./rda5807/images/DSCN0949_trim_540x540.jpg)
-
-![./rda5807/images/DSCN0952_800x600.jpg](./rda5807/images/DSCN0952_800x600.jpg)
+![./rda5807/images/DSCN0992_800x600.jpg](./rda5807/images/DSCN0992_800x600.jpg)
+![./rda5807/images/DSCN0990_trim.jpg](./rda5807/images/DSCN0990_trim.jpg)
 
 ----
 

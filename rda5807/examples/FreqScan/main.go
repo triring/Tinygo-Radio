@@ -1,5 +1,5 @@
 // TinyGo コード（rda5807 初期化 → 76.8MHz 受信）
-// tinygo build -target=m5stack -size=short -o sample.uf2 .
+// tinygo build -target=m5stack -size=short -o FreqScan.uf2 .
 // tinygo flash -target=m5stack -size=short -monitor .
 // tinygo flash -target=pico -size=short -monitor .
 
@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"machine"
 	// "rda5807" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
-	"time"
 	"github.com/triring/Tinygo-Radio/rda5807" // githubで公開しているパッケージをインポートする場合
+	"time"
 )
 
 func main() {
@@ -39,7 +39,7 @@ func main() {
 	time.Sleep(500 * time.Millisecond)
 	// 受信地域の設定から、受信可能な周波数範囲を取得する。
 	band, band_name, min_freq, max_freq := radio.GetBandInfo()
-	fmt.Printf("%08b | Band : [%s] %d - %d MHz\n", band,band_name, min_freq / 1000, max_freq / 1000)	
+	fmt.Printf("%08b | Band : [%s] %d - %d MHz\n", band, band_name, min_freq/1000, max_freq/1000)
 	// 周波数を設定
 	radio.SetFrequency(min_freq)
 
@@ -48,9 +48,9 @@ func main() {
 	radio.SetMute(0)
 	for freq = min_freq; freq <= max_freq; freq += 100 {
 		radio.SetFrequency(freq)
-		rssi, _ = radio.GetRSSI()	// 現在の信号強度(0-63)を読み出す
+		rssi, _ = radio.GetRSSI() // 現在の信号強度(0-63)を読み出す
 		time.Sleep(50 * time.Millisecond)
-		if rssi > max_rssi {		// 最も信号強度の強い放送周波数を探す。
+		if rssi > max_rssi { // 最も信号強度の強い放送周波数を探す。
 			max_rssi = rssi
 			station_frequency = freq
 		}
@@ -109,4 +109,4 @@ Initialization of RDA5807 is complete.
 78.8, 2 :w
 78.9, 2 :w
 79.0, 2 :w
- */
+*/
