@@ -1,5 +1,6 @@
+package si4703
 // package si4703 // ローカルでのテスト用
-module github.com/triring/Tinygo-Radio/si4703 // githubでの公開用
+// module github.com/triring/Tinygo-Radio/si4703 // githubでの公開用
 
 import (
 	"fmt"
