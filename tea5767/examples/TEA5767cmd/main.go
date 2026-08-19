@@ -147,7 +147,7 @@ func main() {
 	})
 
 	radio.SetFrequency(76000) // KHzで設定すること
-	radio.SetMute(false)       // 最初は出力を切っておく。
+	radio.SetMute(false)      // 最初は出力を切っておく。
 	execStatus := true
 	for execStatus {
 		fmt.Printf("> ")

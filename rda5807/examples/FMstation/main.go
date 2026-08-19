@@ -1,6 +1,7 @@
-// TinyGo コード（rda5807 初期化 → 76.8MHz 受信）
+// TinyGo コード（rda5807 初期化 → FM受信）
 // tinygo build -target=m5stack -size=short -o FMstation.uf2 .
 // tinygo flash -target=m5stack -size=short -monitor .
+// tinygo build -target=pico -size=short -o FMstation.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
 package main
