@@ -1,3 +1,7 @@
+// TinyGo コード
+// tinygo build -target=m5stack -size=short -o SeekTest.uf2 .
+// tinygo flash -target=m5stack -size=short -monitor .
+// tinygo build -target=pico -size=short -o SeekTest.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
 package main
@@ -5,9 +9,9 @@ package main
 import (
 	"fmt"
 	"machine"
-//	"si4703" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
-	"time"
+	//	"si4703" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
 	"github.com/triring/Tinygo-Radio/si4703" // githubで公開しているパッケージをインポートする場合
+	"time"
 )
 
 func main() {
@@ -97,7 +101,6 @@ func main() {
 		fmt.Printf("SetMute error: %v\r\n", err)
 	}
 
-
 	// 受信下限周波数に設定する。
 	if err := radio.SetFrequency(76000); err != nil {
 		fmt.Printf("SetFrequency error: %v\r\n", err)
@@ -125,16 +128,11 @@ func main() {
 
 		// Seek Up。
 		fmt.Println("Seek Up...")
-
-		frequency, err = radio.Seek(
-			si4703.SeekUp,
-			si4703.SeekWrap,
-		)
-
+		frequency, err = radio.Seek(si4703.SeekUp, si4703.SeekWrap)
 		if err != nil {
 			fmt.Printf("Seek error: %v\r\n", err)
 		} else {
-			fmt.Printf("Found %d.%03d MHz\r\n",	frequency/1000, frequency%1000)
+			fmt.Printf("Found %d.%03d MHz\r\n", frequency/1000, frequency%1000)
 		}
 		time.Sleep(5 * time.Second)
 	}

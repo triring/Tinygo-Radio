@@ -1,6 +1,7 @@
 package si4703
+
 // package si4703 // ローカルでのテスト用
-// module github.com/triring/Tinygo-Radio/si4703 // githubでの公開用
+module github.com/triring/Tinygo-Radio/si4703 // githubでの公開用
 
 import (
 	"fmt"
@@ -500,14 +501,26 @@ func (s *Si4703) SetMute(mute bool) error {
 	if err := s.readRegisters(); err != nil {
 		return err
 	}
-
 	if mute {
 		s.reg[regPowerCFG] &^= powerCFGDMUTE
 	} else {
 		s.reg[regPowerCFG] |= powerCFGDMUTE
 	}
-
 	return s.writeRegisters()
+}
+
+// GetMuteは音声出力の状態を返します。MuteまたはUnmuteします。
+//
+// Mute状態の時は true、Unmute状態の時は falseを返します。
+func (s *Si4703) GetMute() bool {
+	s.readRegisters()
+	//	fmt.Printf("MuteFlag : %d, 0x%x, 0b%0b\n\r",s.reg[regPowerCFG],s.reg[regPowerCFG],s.reg[regPowerCFG])
+	//	fmt.Printf("s.reg[regPowerCFG] & powerCFGDMUTE : %02x,%0b\n\r\n\r",s.reg[regPowerCFG] & powerCFGDMUTE,s.reg[regPowerCFG] & powerCFGDMUTE)
+	if 0 == s.reg[regPowerCFG]&powerCFGDMUTE {
+		return true
+	} else {
+		return false
+	}
 }
 
 // SetSoftMuteは受信信号が弱い場合のSoftmute機能を有効または無効にします。

@@ -1,7 +1,7 @@
-// TinyGo コード（rda5807 初期化 → FM受信）
-// tinygo build -target=m5stack -size=short -o Sample.uf2 .
+// TinyGo コード（si4703 初期化 → FM受信）
+// tinygo build -target=m5stack -size=short -o FreqScan.uf2 .
 // tinygo flash -target=m5stack -size=short -monitor .
-// tinygo build -target=pico -size=short -o Sample.uf2 .
+// tinygo build -target=pico -size=short -o FreqScan.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
 package main
@@ -9,9 +9,9 @@ package main
 import (
 	"fmt"
 	"machine"
-	// "si4703" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
-	"time"
+	// "si4703" // ローカルのディレクトリに置かれたsi4703のパッケージをインポートする場合
 	"github.com/triring/Tinygo-Radio/si4703" // githubで公開しているパッケージをインポートする場合
+	"time"
 )
 
 func main() {

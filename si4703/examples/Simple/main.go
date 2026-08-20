@@ -10,8 +10,8 @@ import (
 	"fmt"
 	"machine"
 	// "si4703" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
-	"time"
 	"github.com/triring/Tinygo-Radio/si4703" // githubで公開しているパッケージをインポートする場合
+	"time"
 )
 
 func main() {

@@ -1,6 +1,7 @@
-// TinyGo コード（rda5807 初期化 → FM 受信）
-// tinygo build -target=m5stack -size=short -o DRA5807.uf2 .
+// TinyGo コード（si4703 初期化 → コマンドモード）
+// tinygo build -target=m5stack -size=short -o SI4703cmd.uf2 .
 // tinygo flash -target=m5stack -size=short -monitor .
+// tinygo build -target=pico -size=short -o SI4703cmd.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
 package main
@@ -8,8 +9,8 @@ package main
 import (
 	"fmt"
 	"machine"
-	//	"rda5807" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
-	"github.com/triring/Tinygo-Radio/rda5807" // githubで公開しているパッケージをインポートする場合
+	// "si4703" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
+	"github.com/triring/Tinygo-Radio/si4703" // githubで公開しているパッケージをインポートする場合
 	"strconv"
 	"strings"
 	"time"
@@ -21,11 +22,16 @@ var HelpText = [...]string{
 	"\tF [address] :(Freq) 受信周波数を設定する。なお、周波数の設定は、KHzで行う。",
 	"\t            :       例 77.7MHz の場合は、F 77700と入力する。",
 	"\tF           :       引数がない場合は、現在、受信している周波数を表示する。",
+	"\tU           :(Up)   現在設定されている周波数から上方に向かって放送波を検索する。",
+	"\tU [rssi]    :(Up)   閾値として電波強度[RSSI(0-63)]を設定。それ以上の信号を検出すると自動停止する。",
+	"\tD           :(Down) 現在設定されている周波数から下方に向かって放送波を検索する。",
+	"\tD [rssi]    :(Down) 閾値として電波強度[RSSI(0-63)]を設定。それ以上の信号を検出すると自動停止する。",
+//	"\tS           :(scan) 電波を探しながら5秒ずつ次々と番組を切り替えていく",
 	"\tV [volume]  :(Vol ) 音量を設定する。音量の設定範囲は、0 - 15",
 	"\tV           :       引数がない場合は、現在、設定されている音量を表示する。",
 	"\tM [state]   :(Mute) 無音の設定を行う。'M 0' 無音、'M 1' 有音",
 	"\tM           :       引数がない場合は、現在、Muteの設定を表示する。",
-	"\tR           :(RSSI) 信号強度を読み出す。信号の範囲 0-15",
+	"\tR           :(RSSI) 信号強度を読み出す。信号の範囲 0-63",
 	"\tQ           :(Quit) このプログラムを終了する。",
 }
 
@@ -117,29 +123,80 @@ func getCommand() string {
 func main() {
 	time.Sleep(time.Millisecond * 1000)
 	var readbuffer string
-	fmt.Printf("RDA5807 command\n")
+	fmt.Printf("Si4703 command\n")
+	// --------------------------------------------------
+	// RP2040
+	//
+	// I2C0
+	//   SDA = GPIO4
+	//   SCL = GPIO5
+	//
+	// Si4703 RESET
+	//   GPIO3
+	// --------------------------------------------------
 
-	// I2Cの定義と設定
 	i2c := machine.I2C0
-	i2c.Configure(machine.I2CConfig{
-		SDA:       machine.GPIO12, // for zero-kb02(raspi pico)
-		SCL:       machine.GPIO13, // for zero-kb02(raspi pico)
-		Frequency: 400 * machine.KHz,
-	})
-	time.Sleep(500 * time.Millisecond)
-	// rda5807のオブジェクト生成
-	// 第1引数: 使用するI2Cチャンネル
-	radio := rda5807.New(i2c)
-	time.Sleep(500 * time.Millisecond)
-	// rda5807を初期化し、受信帯域を設定する。
-	radio.InitRDA5807(rda5807.Band_World_Wide)
-	time.Sleep(500 * time.Millisecond)
-	// 周波数を設定
-	radio.SetFrequency(radio.GetLowerFrequencyLimit())
-	time.Sleep(500 * time.Millisecond)
-	radio.SetVolume(7)
-	// 初期設定完了
 
+	err := i2c.Configure(machine.I2CConfig{
+		Frequency: 400 * machine.KHz,
+		SDA:       machine.GPIO4,
+		SCL:       machine.GPIO5,
+	})
+
+	if err != nil {
+		fmt.Printf("I2C configure error: %v\r\n", err)
+		for {
+			time.Sleep(time.Second)
+		}
+	}
+
+	radio := si4703.New(
+		i2c,
+		machine.GPIO3,
+	)
+
+	// Si4703初期化。
+	err = radio.Init()
+	if err != nil {
+		fmt.Printf("Si4703 init error: %v\r\n", err)
+		for {
+			time.Sleep(time.Second)
+		}
+	}
+
+	fmt.Printf("DEVICEID = 0x%04X\r\n", radio.GetDeviceID())
+	fmt.Printf("CHIPID   = 0x%04X\r\n", radio.GetChipID())
+
+	// --------------------------------------------------
+	// 日本向け設定
+	// 76～108MHz
+	// 100kHz spacing
+	// --------------------------------------------------
+
+	if err := radio.SetBand(si4703.BandJapanWide); err != nil {
+		fmt.Printf("SetBand error: %v\r\n", err)
+	}
+
+	if err := radio.SetSpace(si4703.Space100kHz); err != nil {
+		fmt.Printf("SetSpace error: %v\r\n", err)
+	}
+
+	// SeekのRSSI閾値。
+	//
+	// 0は最も弱い局も候補になります。
+	// 実際の環境では10～30程度から試すとよいでしょう。
+	if err := radio.SetSeekThreshold(40); err != nil {
+		fmt.Printf("SetSeekThreshold error: %v\r\n", err)
+	}
+	// 音量。
+	if err := radio.SetVolume(8); err != nil {
+		fmt.Printf("SetVolume error: %v\r\n", err)
+	}
+
+	// Unmute。
+	if err := radio.SetMute(false); err != nil {
+		fmt.Printf("SetMute error: %v\r\n", err)
+	}
 	execStatus := true
 	for execStatus {
 		fmt.Printf("> ")
@@ -162,23 +219,96 @@ func main() {
 				}
 			case 'F': //	現在の周波数の確認と、新しい周波数の設定
 				if len(elements) == 1 {
-					freq, _ := radio.GetFrequency()
+					freq := radio.GetFrequency()
 					fmt.Printf("Freq   : %d\n", int(freq))
 				} else if len(elements) == 2 {
 					freq, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
 					if err == nil {
-						if freq < int64(radio.GetLowerFrequencyLimit()) || freq > int64(radio.GetUpperFrequencyLimit()) {
-							fmt.Printf("The frequency setting range is from %d MHz to %d MHz.\n", radio.GetLowerFrequencyLimit(), radio.GetUpperFrequencyLimit())
+						lower_frequency_limit, upper_frequency_limit, _, _ := radio.BandParameters()
+						if (int(freq) < lower_frequency_limit || int(freq) > upper_frequency_limit) {
+							fmt.Printf("The frequency setting range is from %d MHz to %d MHz.\n", lower_frequency_limit, upper_frequency_limit)
 						} else {
 							fmt.Printf("Freq   : %d\n", int(freq))
 							radio.SetFrequency(int(freq))
 						}
-						//	radio.SetMute(1)
+						//	radio.SetMute(false)
+					}
+				}
+			case 'U': //	現在設定されている周波数から上方に向かって放送波を検索する。
+				threshold := 32	// 受信電波強度(rssi)のデフォルト閾値
+				if len(elements) == 1 {
+					// 受信する電波強度の閾値をデフォルト値に設定する。
+					if err := radio.SetSeekThreshold(uint8(threshold)); err != nil {
+						fmt.Printf("SetSeekThreshold error: %v\r\n", err)
+					}
+					// Seek Up.
+					fmt.Println("Seek Up...")
+					freq, err := radio.Seek(si4703.SeekUp, si4703.SeekWrap)
+					if err != nil {
+						fmt.Printf("Seek error: %v\r\n", err)
+					} else {
+						fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+					}
+					rssi, _ := radio.GetRSSI()
+					fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, threshold)
+				} else if len(elements) == 2 {
+					rssi_threshold, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
+					if err == nil {
+						// 受信する電波強度の閾値を40に設定する。
+						if err := radio.SetSeekThreshold(uint8(rssi_threshold)); err != nil {
+							fmt.Printf("SetSeekThreshold error: %v\r\n", err)
+						}
+						// Seek Up.
+						fmt.Println("Seek Up...")
+						freq, err := radio.Seek(si4703.SeekUp, si4703.SeekWrap)
+						if err != nil {
+							fmt.Printf("Seek error: %v\r\n", err)
+						} else {
+							fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+						}
+						rssi, _ := radio.GetRSSI()
+						fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, rssi_threshold)
+					}
+				}
+			case 'D': //	現在設定されている周波数から下方に向かって放送波を検索する。
+				threshold := 32	// 受信電波強度(rssi)のデフォルト閾値
+				if len(elements) == 1 {
+					// 受信する電波強度の閾値をデフォルト値に設定する。
+					if err := radio.SetSeekThreshold(uint8(threshold)); err != nil {
+						fmt.Printf("SetSeekThreshold error: %v\r\n", err)
+					}
+					// Seek Down.
+					fmt.Println("Seek Down...")
+					freq, err := radio.Seek(si4703.SeekDown, si4703.SeekWrap)
+					if err != nil {
+						fmt.Printf("Seek error: %v\r\n", err)
+					} else {
+						fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+					}
+					rssi, _ := radio.GetRSSI()
+					fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, threshold)
+				} else if len(elements) == 2 {
+					rssi_threshold, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
+					if err == nil {
+						// 受信する電波強度の閾値を40に設定する。
+						if err := radio.SetSeekThreshold(uint8(rssi_threshold)); err != nil {
+							fmt.Printf("SetSeekThreshold error: %v\r\n", err)
+						}
+						// Seek Down.
+						fmt.Println("Seek Down...")
+						freq, err := radio.Seek(si4703.SeekDown, si4703.SeekWrap)
+						if err != nil {
+							fmt.Printf("Seek error: %v\r\n", err)
+						} else {
+							fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+						}
+						rssi, _ := radio.GetRSSI()
+						fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, rssi_threshold)
 					}
 				}
 			case 'V': //	現在の音量の確認と、新しい音量の設定
 				if len(elements) == 1 {
-					volume, _ := radio.GetVolume()
+					volume := radio.GetVolume()
 					fmt.Printf("Volume : %d\n", volume)
 				} else if len(elements) == 2 {
 					volume, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
@@ -193,19 +323,19 @@ func main() {
 				}
 			case 'M': //	無音有音の設定できない。
 				if len(elements) == 1 {
-					mute, _ := radio.GetMute()
+					mute := radio.GetMute()
 					fmt.Printf("Mute   : %t\n", mute)
-				} else if len(elements) > 1 {
+				} else if len(elements) == 2 {
 					//	数値変換
 					m, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
 					//	fmt.Printf("volume : %d\n", vol)
 					if err == nil {
 						if m == 0 {
-							radio.SetMute(0)
+							radio.SetMute(true)
 						} else {
-							radio.SetMute(1)
+							radio.SetMute(false)
 						}
-						mute, _ := radio.GetMute()
+						mute := radio.GetMute()
 						fmt.Printf("Mute   : %t\n", mute)
 					}
 				}
@@ -215,7 +345,7 @@ func main() {
 					fmt.Printf("RSSI   : %2d\n", rssi)
 				}
 			case 'Q':
-				radio.SetMute(0)
+				radio.SetMute(true)
 				execStatus = false // プログラムを終了する。
 			}
 		}
@@ -226,37 +356,3 @@ func main() {
 		time.Sleep(time.Millisecond * 5000)
 	}
 }
-
-/*
-> tinygo flash -target=pico -size=short -monitor .
-   code    data     bss |   flash     ram
-  74960    1612    5576 |   76572    7188
-Connected to COM23. Press Ctrl-C to exit.
-RDA5807 command
-Initialization of RDA5807 is complete.
-Command list
-        H           :(Help) コマンドの使用方法を表示する。
-        F [address] :(Freq) 受信周波数を設定する。なお、周波数の設定は、KHzで行う。
-                    :       例 77.7MHz の場合は、F 77700と入力する。
-        F           :       引数がない場合は、現在、受信している周波数を表示する。
-        V [volume]  :(Vol ) 音量を設定する。音量の設定範囲は、0 - 15
-        V           :       引数がない場合は、現在、設定されている音量を表示する。
-        M [state]   :(Mute) 無音の設定を行う。'M 0' 無音、'M 1' 有音
-        M           :       引数がない場合は、現在、Muteの設定を表示する。
-        R           :(RSSI) 信号強度を読み出す。信号の範囲 0-15
-        Q           :(Quit) このプログラムを終了する。
-> F
-Freq   : 76000
-> F 88700
-Freq   : 88700
-> V
-Volume : 12
-> V 15
-Volume : 15
-> R
-RSSI   : 52
-> M 0
-Mute   : true
-> M 1
-Mute   : false
-*/
