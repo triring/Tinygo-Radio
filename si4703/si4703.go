@@ -204,8 +204,7 @@ func (s *Si4703) readStatus() error {
 		return err
 	}
 
-	s.reg[regStatusRSSI] =
-		uint16(buf[0])<<8 | uint16(buf[1])
+	s.reg[regStatusRSSI] = uint16(buf[0])<<8 | uint16(buf[1])
 
 	return nil
 }

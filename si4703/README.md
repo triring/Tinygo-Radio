@@ -15,6 +15,20 @@ Skyworks（元Silicon Labs）のSi4703は、76MHz〜108MHzに対応するワン�
 ![./images/DSCN0997_800x600.jpg](./images/DSCN0997_800x600.jpg)
 ![./images/DSCN0998_800x600.jpg](./images/DSCN0998_800x600.jpg)
 
+### Si4703の注意事項
+
+I2Cで制御可能となっていますが、SDAピンとSCLピンとの接続だけでは動きません。  
+リセットピンにも信号線を接続し、以下の様に、最初に、マイコンから1ミリ秒のリセット信号を送ってやらないと、I2Cの通信が始まりません。  
+注意して下さい。  
+
+```go
+	s.reset.Low()
+	time.Sleep(1 * time.Millisecond)
+
+	s.reset.High()
+	time.Sleep(1 * time.Millisecond)
+```
+
 ## 使用方法
 
 以下のコマンドで、このリポジトリの内容をローカルにコピーして下さい。
