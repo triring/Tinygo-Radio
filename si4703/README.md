@@ -2,7 +2,7 @@
 
 FMラジオ受信DSPモジュールSi4703をTinygoでコントロールするためのパッケージです。
 
-<!--  ![./images/DSCN0954_800x600.jpg](./images/DSCN0954_800x600.jpg) -->
+![./images/DSCN1013_800x600.jpg](./images/DSCN1013_800x600.jpg)
 
 ## Si4703の特徴
 
@@ -11,6 +11,9 @@ Skyworks（元Silicon Labs）のSi4703は、76MHz〜108MHzに対応するワン�
 * 受信周波数：76MHz 〜 108MHz（日本のFM放送やワイドFM、海外のFM放送に対応）
 * RDS/RBDS（ラジオデータシステム）のデコード
 * インターフェース：2線式 /3線式（I2C対応）
+
+![./images/DSCN0997_800x600.jpg](./images/DSCN0997_800x600.jpg)
+![./images/DSCN0998_800x600.jpg](./images/DSCN0998_800x600.jpg)
 
 ## 使用方法
 
@@ -54,6 +57,9 @@ git clone https://github.com/triring/Tinygo-Radio.git
 この中にテスト用コードがあります。  
 
 1. 使用するターゲットボードとSi4703ラジオモジュールをI2Cケーブルで接続して下さい。
+
+![./images/DSCN1006_800x600.jpg](./images/DSCN1006_800x600.jpg)
+
 2. PCとターゲットボードをUSBケーブルで接続して下さい。
 3. 最初に、このREADME.mdがあるディレクトリで、1度だけ以下のコマンドを実行して下さい。
 
@@ -77,3 +83,5 @@ go get github.com/triring/Tinygo-Radio/si4703
 ```bash
 tinygo flash -target=pico -size=short -monitor .
 ```
+
+![./images/DSCN1019_800x600.jpg](./images/DSCN1019_800x600.jpg)
