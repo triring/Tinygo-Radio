@@ -1,8 +1,9 @@
 package si4703
 
-// package si4703 // ローカルでのテスト用
-module github.com/triring/Tinygo-Radio/si4703 // githubでの公開用
-
+/*
+SI4703 is a compact FM DSP receiver module featuring I²C control, RDS support, high‑sensitivity tuning, and minimal external components for easy integration.
+SI4703はFM専用DSPレシーバで、I²C制御・音量調整・RDS対応・高感度受信を備え、少ない外付け部品で扱える小型高機能モジュールです。
+ */
 import (
 	"fmt"
 	"machine"
