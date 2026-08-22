@@ -9,7 +9,6 @@ NXP Semiconductors（旧Philips）製のFMラジオ受信DSPモジュールで�
 [./tea5767/README.md](./tea5767/README.md)
 
 ![./tea5767/images/DSCN0954_800x600.jpg](./tea5767/images/DSCN0949_trim_540x540.jpg)
-
 ![./tea5767/images/DSCN0952_800x600.jpg](./tea5767/images/DSCN0952_800x600.jpg)
 
 ----
@@ -26,8 +25,7 @@ RDA Microelectronics製のFMラジオ受信DSPモジュールで、低消費電�
 
 ----
 
-## [Si4703](./si4703/README.md)
- 用パッケージ
+## [Si4703](./si4703/README.md) 用パッケージ
 Silicon Labs製のFMラジオ受信DSPモジュールで、高感度受信、低消費電力、I²C制御、ステレオ復調を備えている。  
 外付け部品が少なく、組み込み用途に適した設計である。さらにRDS（Radio Data System）対応が特徴で、局名やテキスト情報の取得が可能なため、情報表示機器や高機能ラジオ製品で広く利用されている。  
 
