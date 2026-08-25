@@ -21,11 +21,16 @@ var HelpText = [...]string{
 	"\tF [frequency] :(Freq) 受信周波数を設定する。なお、周波数の設定は、KHzで行う。",
 	"\t              :       例 77.7MHz の場合は、F 77700と入力する。",
 	"\tF             :       引数がない場合は、現在、受信している周波数を表示する。",
+	"\tU             :(Up)   現在設定されている周波数から上方に向かって放送波を検索する。",
+	"\tU [rssi]      :(Up)   閾値として電波強度[RSSI(0-63)]を設定。それ以上の信号を検出すると自動停止する。",
+	"\tD             :(Down) 現在設定されている周波数から下方に向かって放送波を検索する。",
+	"\tD [rssi]      :(Down) 閾値として電波強度[RSSI(0-63)]を設定。それ以上の信号を検出すると自動停止する。",
+//	"\tS             :(scan) 電波を探しながら5秒ずつ次々と番組を切り替えていく",
 	"\tV [volume]    :(Vol ) 音量を設定する。音量の設定範囲は、0 - 15",
 	"\tV             :       引数がない場合は、現在、設定されている音量を表示する。",
 	"\tM [state]     :(Mute) 無音の設定を行う。'M 0' 無音、'M 1' 有音",
 	"\tM             :       引数がない場合は、現在、Muteの設定を表示する。",
-	"\tR             :(RSSI) 信号強度を読み出す。信号の範囲 0-15",
+	"\tR             :(RSSI) 信号強度を読み出す。信号の範囲 0-63",
 	"\tQ             :(Quit) このプログラムを終了する。",
 }
 
@@ -173,7 +178,63 @@ func main() {
 							fmt.Printf("Freq   : %d\n", int(freq))
 							radio.SetFrequency(int(freq))
 						}
-						//	radio.SetMute(1)
+						//	radio.SetMute(false)
+					}
+				}
+			case 'U': //	現在設定されている周波数から上方に向かって放送波を検索する。
+				threshold := 32	// 受信電波強度(rssi)のデフォルト閾値
+				if len(elements) == 1 {
+					// Seek Up.
+					fmt.Println("Seek Up...")
+					freq, err := radio.SeekUp(uint8(threshold))
+					if err != nil {
+						fmt.Printf("Seek error: %v\r\n", err)
+					} else {
+						fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+					}
+					rssi, _ := radio.GetRSSI()
+					fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, threshold)
+				} else if len(elements) == 2 {
+					rssi_threshold, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
+					if err == nil {
+						// Seek Up.
+						fmt.Println("Seek Up...")
+						freq, err := radio.SeekUp(uint8(rssi_threshold))
+						if err != nil {
+							fmt.Printf("Seek error: %v\r\n", err)
+						} else {
+							fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+						}
+						rssi, _ := radio.GetRSSI()
+						fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, rssi_threshold)
+					}
+				}
+			case 'D': //	現在設定されている周波数から下方に向かって放送波を検索する。
+				threshold := 32	// 受信電波強度(rssi)のデフォルト閾値
+				if len(elements) == 1 {
+					// Seek Down.
+					fmt.Println("Seek Down...")
+					freq, err := radio.SeekDown(uint8(threshold))
+					if err != nil {
+						fmt.Printf("Seek error: %v\r\n", err)
+					} else {
+						fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+					}
+					rssi, _ := radio.GetRSSI()
+					fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, threshold)
+				} else if len(elements) == 2 {
+					rssi_threshold, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
+					if err == nil {
+						// Seek Down.
+						fmt.Println("Seek Down...")
+						freq, err := radio.SeekDown(uint8(rssi_threshold))
+						if err != nil {
+							fmt.Printf("Seek error: %v\r\n", err)
+						} else {
+							fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+						}
+						rssi, _ := radio.GetRSSI()
+						fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, rssi_threshold)
 					}
 				}
 			case 'V': //	現在の音量の確認と、新しい音量の設定
@@ -201,9 +262,9 @@ func main() {
 					//	fmt.Printf("volume : %d\n", vol)
 					if err == nil {
 						if m == 0 {
-							radio.SetMute(0)
+							radio.SetMute(true)
 						} else {
-							radio.SetMute(1)
+							radio.SetMute(false)
 						}
 						mute, _ := radio.GetMute()
 						fmt.Printf("Mute   : %t\n", mute)
@@ -215,7 +276,7 @@ func main() {
 					fmt.Printf("RSSI   : %2d\n", rssi)
 				}
 			case 'Q':
-				radio.SetMute(0)
+				radio.SetMute(true)
 				execStatus = false // プログラムを終了する。
 			}
 		}

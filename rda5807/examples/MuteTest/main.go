@@ -49,13 +49,13 @@ func main() {
 	for {
 		f, _ := radio.GetFrequency() // 現在、受信中の周波数を取得
 		fmt.Printf("\nFM %5.1fMHz 受信中 : Unmute", (float64(f) / 1000.0))
-		radio.SetMute(1)
+		radio.SetMute(false)
 		for i := 1; i <= 10; i++ {
 			fmt.Printf(" %2d", i)
 			time.Sleep(time.Second * 1)
 		}
 		fmt.Printf("\nFM %5.1fMHz 受信中 :   Mute", (float64(f) / 1000.0))
-		radio.SetMute(0)
+		radio.SetMute(true)
 		for i := 1; i <= 10; i++ {
 			fmt.Printf(" %2d", i)
 			time.Sleep(time.Second * 1)

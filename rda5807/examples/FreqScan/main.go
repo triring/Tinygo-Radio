@@ -45,7 +45,7 @@ func main() {
 
 	var max_rssi uint8 = 0
 	var station_frequency int = 0
-	radio.SetMute(0)
+	radio.SetMute(true)
 	for freq = min_freq; freq <= max_freq; freq += 100 {
 		radio.SetFrequency(freq)
 		rssi, _ = radio.GetRSSI() // 現在の信号強度(0-63)を読み出す
@@ -62,7 +62,7 @@ func main() {
 	}
 	// 最も信号強度の強い放送周波数にチューニングする。
 	radio.SetFrequency(station_frequency)
-	radio.SetMute(1)
+	radio.SetMute(false)
 	radio.SetVolume(12)
 	for {
 		rssi, _ = radio.GetRSSI()
