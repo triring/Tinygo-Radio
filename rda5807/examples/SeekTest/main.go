@@ -1,6 +1,7 @@
 // TinyGo コード（rda5807 初期化 → 76.8MHz 受信）
-// tinygo build -target=m5stack -size=short -o MuteTest.uf2 .
+// tinygo build -target=m5stack -size=short -o SeekTest.uf2 .
 // tinygo flash -target=m5stack -size=short -monitor .
+// tinygo build -target=pico -size=short -o SeekTest.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
 // ソフトウェアスキャンに対応
@@ -16,7 +17,7 @@ import (
 )
 
 func main() {
-	threshold := 35	// 電波強度の閾値
+	threshold := 35 // 電波強度の閾値
 	// I2Cの定義と設定
 	i2c := machine.I2C0
 	i2c.Configure(machine.I2CConfig{
@@ -64,7 +65,7 @@ func main() {
 				volume, _ := radio.GetVolume()
 				frequency, err = radio.GetFrequency()
 				fmt.Printf(
-					"Frequency=%d.%03d MHz, RSSI : Threshold = %d: %d dBuV, Volume=%d\r\n",
+					"Frequency= %3d.%03d MHz, RSSI : Threshold = %d : %d dBuV, Volume=%d\r\n",
 					frequency/1000,
 					frequency%1000,
 					rssi,
@@ -87,7 +88,7 @@ func main() {
 				volume, _ := radio.GetVolume()
 				frequency, err = radio.GetFrequency()
 				fmt.Printf(
-					"Frequency=%d.%03d MHz, RSSI : Threshold = %d: %d dBuV, Volume=%d\r\n",
+					"Frequency= %3d.%03d MHz, RSSI : Threshold = %d : %d dBuV, Volume=%d\r\n",
 					frequency/1000,
 					frequency%1000,
 					rssi,

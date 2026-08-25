@@ -1,6 +1,7 @@
 // TinyGo コード（rda5807 初期化 → FM 受信）
-// tinygo build -target=m5stack -size=short -o DRA5807.uf2 .
+// tinygo build -target=m5stack -size=short -o DRA5807cmd.uf2 .
 // tinygo flash -target=m5stack -size=short -monitor .
+// tinygo build -target=pico -size=short -o DRA5807cmd.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
 package main
@@ -25,7 +26,7 @@ var HelpText = [...]string{
 	"\tU [rssi]      :(Up)   閾値として電波強度[RSSI(0-63)]を設定。それ以上の信号を検出すると自動停止する。",
 	"\tD             :(Down) 現在設定されている周波数から下方に向かって放送波を検索する。",
 	"\tD [rssi]      :(Down) 閾値として電波強度[RSSI(0-63)]を設定。それ以上の信号を検出すると自動停止する。",
-//	"\tS             :(scan) 電波を探しながら5秒ずつ次々と番組を切り替えていく",
+	//	"\tS             :(scan) 電波を探しながら5秒ずつ次々と番組を切り替えていく",
 	"\tV [volume]    :(Vol ) 音量を設定する。音量の設定範囲は、0 - 15",
 	"\tV             :       引数がない場合は、現在、設定されている音量を表示する。",
 	"\tM [state]     :(Mute) 無音の設定を行う。'M 0' 無音、'M 1' 有音",
@@ -182,7 +183,7 @@ func main() {
 					}
 				}
 			case 'U': //	現在設定されている周波数から上方に向かって放送波を検索する。
-				threshold := 32	// 受信電波強度(rssi)のデフォルト閾値
+				threshold := 32 // 受信電波強度(rssi)のデフォルト閾値
 				if len(elements) == 1 {
 					// Seek Up.
 					fmt.Println("Seek Up...")
@@ -196,21 +197,25 @@ func main() {
 					fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, threshold)
 				} else if len(elements) == 2 {
 					rssi_threshold, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
-					if err == nil {
-						// Seek Up.
-						fmt.Println("Seek Up...")
-						freq, err := radio.SeekUp(uint8(rssi_threshold))
-						if err != nil {
-							fmt.Printf("Seek error: %v\r\n", err)
-						} else {
-							fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+					if rssi_threshold < 0 || rssi_threshold > 63 {
+						fmt.Printf("Error: The threshold setting range is from 0 to 63.\r\n")
+					} else {
+						if err == nil {
+							// Seek Up.
+							fmt.Println("Seek Up...")
+							freq, err := radio.SeekUp(uint8(rssi_threshold))
+							if err != nil {
+								fmt.Printf("Seek error: %v\r\n", err)
+							} else {
+								fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+							}
+							rssi, _ := radio.GetRSSI()
+							fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, rssi_threshold)
 						}
-						rssi, _ := radio.GetRSSI()
-						fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, rssi_threshold)
 					}
 				}
 			case 'D': //	現在設定されている周波数から下方に向かって放送波を検索する。
-				threshold := 32	// 受信電波強度(rssi)のデフォルト閾値
+				threshold := 32 // 受信電波強度(rssi)のデフォルト閾値
 				if len(elements) == 1 {
 					// Seek Down.
 					fmt.Println("Seek Down...")
@@ -224,17 +229,21 @@ func main() {
 					fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, threshold)
 				} else if len(elements) == 2 {
 					rssi_threshold, err := strconv.ParseInt(strings.Trim(elements[1], " \n\r"), 0, 64)
-					if err == nil {
-						// Seek Down.
-						fmt.Println("Seek Down...")
-						freq, err := radio.SeekDown(uint8(rssi_threshold))
-						if err != nil {
-							fmt.Printf("Seek error: %v\r\n", err)
-						} else {
-							fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+					if rssi_threshold < 0 || rssi_threshold > 63 {
+						fmt.Printf("Error: The threshold setting range is from 0 to 63.\r\n")
+					} else {
+						if err == nil {
+							// Seek Down.
+							fmt.Println("Seek Down...")
+							freq, err := radio.SeekDown(uint8(rssi_threshold))
+							if err != nil {
+								fmt.Printf("Seek error: %v\r\n", err)
+							} else {
+								fmt.Printf("Found %d.%03d MHz\r\n", freq/1000, freq%1000)
+							}
+							rssi, _ := radio.GetRSSI()
+							fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, rssi_threshold)
 						}
-						rssi, _ := radio.GetRSSI()
-						fmt.Printf("RSSI : threshold =  %2d : %2d\r\n", rssi, rssi_threshold)
 					}
 				}
 			case 'V': //	現在の音量の確認と、新しい音量の設定
@@ -270,7 +279,7 @@ func main() {
 						fmt.Printf("Mute   : %t\n", mute)
 					}
 				}
-			case 'R': //	RSSI 信号強度を読み出す。信号の範囲 0-15"
+			case 'R': //	RSSI 信号強度を読み出す。信号の範囲 0-63"
 				if len(elements) == 1 {
 					rssi, _ := radio.GetRSSI()
 					fmt.Printf("RSSI   : %2d\n", rssi)

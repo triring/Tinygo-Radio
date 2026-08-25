@@ -1,6 +1,7 @@
 // TinyGo コード（rda5807 初期化 → 76.8MHz 受信）
 // tinygo build -target=m5stack -size=short -o Sample.uf2 .
 // tinygo flash -target=m5stack -size=short -monitor .
+// tinygo build -target=pico -size=short -o Sample.uf2 .
 // tinygo flash -target=pico -size=short -monitor .
 
 package main
@@ -36,9 +37,9 @@ func main() {
 	time.Sleep(500 * time.Millisecond)
 	// rda5807を初期化
 	// 受信帯域を設定する。
-//	radio.InitRDA5807(rda5807.Band_World_Wide)
+	//	radio.InitRDA5807(rda5807.Band_World_Wide)
 	radio.InitRDA5807(rda5807.Band_Japan)
-//	radio.InitRDA5807_ORG(rda5807.Band_Japan)
+	//	radio.InitRDA5807_ORG(rda5807.Band_Japan)
 	time.Sleep(500 * time.Millisecond)
 	// 周波数を設定
 	radio.SetFrequency(freq)

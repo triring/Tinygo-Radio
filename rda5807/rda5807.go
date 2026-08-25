@@ -313,7 +313,6 @@ func (d *Device) InitRDA5807(band byte) error {
 	reg04 := regAudioDeemphasis | regAudioSoftMute
 	// reg04 := regAudioDeemphasis | regAudioSoftMute | regAudioAFCD
 
-
 	// REG 0x05:
 	// INT_MODE=1, SEEKTH=1000 (datasheet default), volume=8.
 	reg05 := uint16(0x8000) | uint16(0x0800) | 0x008f
@@ -352,7 +351,6 @@ func (d *Device) SetFrequency(freqKHz int) error {
 		return fmt.Errorf("frequency %d kHz is outside %d-%d kHz",
 			freqKHz, d.minFreq, d.maxFreq)
 	}
-
 	step := d.channelSpacingKHz()
 	if (freqKHz-d.minFreq)%step != 0 {
 		return fmt.Errorf("frequency %d kHz is not aligned to %d kHz spacing",
@@ -411,6 +409,7 @@ func (d *Device) GetLowerFrequencyLimit() int {
 // register 0x0B bits 15:9.
 // RSSI の取得 (受信信号強度)
 // 現在の信号強度(0-63)を読み出す
+//
 //	15:10 RSSI[5:0] : 受信信号強度
 //	 9:0  その他ステータス
 //
@@ -420,8 +419,8 @@ func (d *Device) GetRSSI() (uint8, error) {
 	if err != nil {
 		return 0, err
 	}
-//	rssi := uint8((val >> 9) & 0x003F)
-//	return rssi, nil
+	//	rssi := uint8((val >> 9) & 0x003F)
+	//	return rssi, nil
 	return uint8((value & regRSSIMask) >> 9), nil
 }
 
@@ -487,19 +486,18 @@ func (d *Device) GetMute() (bool, error) {
 // SeekUp returns an error. Seek wraps from the upper band limit to the
 // lower limit because SKMODE is cleared.
 func (d *Device) SeekUp(rssi_threshold uint8) (freq int, err error) {
+	limit := d.GetUpperFrequencyLimit()
 	for {
-		f,     _ := d.GetFrequency()
-		limit := d.GetUpperFrequencyLimit() 
+		f, _ := d.GetFrequency()
 		if f >= limit {
 			return 0, fmt.Errorf("The set frequency has reached the upper limit: %d", limit)
-		//	return 0, fmt.Errorf("The set frequency has reached the lower limit: %d", limit)
 		}
 		step := d.channelSpacingKHz()
 		d.SetFrequency(f + step)
 		time.Sleep(initDelay)
 		rssi, _ := d.GetRSSI()
 		if rssi > rssi_threshold {
-			f,     _ := d.GetFrequency()
+			f, _ := d.GetFrequency()
 			return f, nil
 		}
 	}
@@ -511,11 +509,10 @@ func (d *Device) SeekUp(rssi_threshold uint8) (freq int, err error) {
 // SeekDown returns an error. Seek wraps from the lower band limit to the
 // upper limit because SKMODE is cleared.
 func (d *Device) SeekDown(rssi_threshold uint8) (freq int, err error) {
+	limit := d.GetLowerFrequencyLimit()
 	for {
-		f,     _ := d.GetFrequency()
-		limit := d.GetLowerFrequencyLimit() 
+		f, _ := d.GetFrequency()
 		if limit >= f {
-		//	return 0, fmt.Errorf("The set frequency has reached the upper limit: %d", limit)
 			return 0, fmt.Errorf("The set frequency has reached the lower limit: %d", limit)
 		}
 		step := d.channelSpacingKHz()
@@ -523,7 +520,7 @@ func (d *Device) SeekDown(rssi_threshold uint8) (freq int, err error) {
 		time.Sleep(initDelay)
 		rssi, _ := d.GetRSSI()
 		if rssi > rssi_threshold {
-			f,     _ := d.GetFrequency()
+			f, _ := d.GetFrequency()
 			return f, nil
 		}
 	}
