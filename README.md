@@ -35,6 +35,5 @@ Silicon Labs製のFMラジオ受信DSPモジュールで、高感度受信、低
 ![./si4703/images/DSCN0997_800x600.jpg](./si4703/images/DSCN0997_800x600.jpg)
 ![./si4703/images/DSCN0998_800x600.jpg](./si4703/images/DSCN0998_800x600.jpg)
 
-
 ----
 

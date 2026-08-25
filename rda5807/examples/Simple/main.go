@@ -8,7 +8,7 @@ package main
 import (
 	"fmt"
 	"machine"
-	//	"rda5807" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
+	// "rda5807" // ローカルのディレクトリに置かれたrda5807のパッケージをインポートする場合
 	"github.com/triring/Tinygo-Radio/rda5807" // githubで公開しているパッケージをインポートする場合
 	"time"
 )
@@ -36,7 +36,9 @@ func main() {
 	time.Sleep(500 * time.Millisecond)
 	// rda5807を初期化
 	// 受信帯域を設定する。
-	radio.InitRDA5807(rda5807.Band_World_Wide)
+//	radio.InitRDA5807(rda5807.Band_World_Wide)
+	radio.InitRDA5807(rda5807.Band_Japan)
+//	radio.InitRDA5807_ORG(rda5807.Band_Japan)
 	time.Sleep(500 * time.Millisecond)
 	// 周波数を設定
 	radio.SetFrequency(freq)

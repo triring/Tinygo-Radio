@@ -40,17 +40,21 @@ func main() {
 	// 周波数を設定
 	radio.SetFrequency(freq)
 	time.Sleep(500 * time.Millisecond)
+	// 音量の設定
+	radio.SetVolume(12)
+	v, _ := radio.GetVolume()
+	fmt.Printf("Volume %d\n", v)
 
 	// 無限ループでmute とUnmuteを5秒毎に繰り返す。
 	for {
 		f, _ := radio.GetFrequency() // 現在、受信中の周波数を取得
-		fmt.Printf("FM %5.1fMHz 受信中 : Unmute\n", (float64(f) / 1000.0))
+		fmt.Printf("\nFM %5.1fMHz 受信中 : Unmute", (float64(f) / 1000.0))
 		radio.SetMute(1)
 		for i := 1; i <= 10; i++ {
 			fmt.Printf(" %2d", i)
 			time.Sleep(time.Second * 1)
 		}
-		fmt.Printf("FM %5.1fMHz 受信中 :   Mute\n", (float64(f) / 1000.0))
+		fmt.Printf("\nFM %5.1fMHz 受信中 :   Mute", (float64(f) / 1000.0))
 		radio.SetMute(0)
 		for i := 1; i <= 10; i++ {
 			fmt.Printf(" %2d", i)
